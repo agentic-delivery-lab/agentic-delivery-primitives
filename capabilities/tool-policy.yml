@@ -1,0 +1,11 @@
+schemaVersion: 1
+policyVersion: 0.1.0
+defaults:
+  network: denied
+  secrets: denied
+  arbitraryDownloads: denied
+approved:
+  - id: repository-read
+    scope: source-repository
+  - id: deterministic-validation
+    scope: primitive-source

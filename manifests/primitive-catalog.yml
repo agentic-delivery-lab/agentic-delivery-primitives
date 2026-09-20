@@ -1,0 +1,101 @@
+schemaVersion: 1
+architectureId: urn:agentic-delivery:architecture:authority
+primitives:
+  - id: codex-delivery
+    kind: agent
+    version: 0.1.0
+    path: agents/codex/codex-delivery.md
+    enforcement: instructional
+    adrs: [ADR-0009, ADR-0012, ADR-0015, ADR-0017]
+    domains: [agentic-delivery-control-plane]
+  - id: architecture-decision
+    kind: skill
+    version: 0.1.0
+    path: skills/architecture-decision/SKILL.md
+    enforcement: instructional
+    adrs: [ADR-0001]
+    domains: [agentic-delivery-governance]
+  - id: delivery-workflow
+    kind: skill
+    version: 0.1.0
+    path: skills/delivery-workflow/SKILL.md
+    enforcement: instructional
+    adrs: [ADR-0004, ADR-0005, ADR-0006, ADR-0007, ADR-0008]
+    domains: [agentic-delivery-governance]
+  - id: plain-language-communication
+    kind: skill
+    version: 0.1.0
+    path: skills/plain-language-communication/SKILL.md
+    enforcement: instructional
+    adrs: [ADR-0002]
+    domains: [agentic-delivery-governance]
+  - id: ubiquitous-language
+    kind: skill
+    version: 0.1.0
+    path: skills/ubiquitous-language/SKILL.md
+    enforcement: instructional
+    adrs: [ADR-0003]
+    domains: [agentic-delivery-governance]
+  - id: issue-branch-name-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-branch-name.mjs
+    enforcement: deterministic
+    adrs: [ADR-0007]
+    domains: [agentic-delivery-governance]
+  - id: commit-range-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-commit-range.mjs
+    enforcement: deterministic
+    adrs: [ADR-0004, ADR-0005]
+    domains: [agentic-delivery-governance]
+  - id: changelog-structure-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-changelog.mjs
+    enforcement: deterministic
+    adrs: [ADR-0006]
+    domains: [agentic-delivery-governance]
+  - id: gitmoji-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-gitmoji.mjs
+    enforcement: deterministic
+    adrs: [ADR-0005]
+    domains: [agentic-delivery-governance]
+  - id: pull-request-body-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-pull-request-body.mjs
+    enforcement: deterministic
+    adrs: [ADR-0016]
+    domains: [agentic-delivery-governance]
+  - id: pull-request-branch-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-pull-request-branch.mjs
+    enforcement: deterministic
+    adrs: [ADR-0007]
+    domains: [agentic-delivery-governance]
+  - id: pull-request-title-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-pull-request-title.mjs
+    enforcement: deterministic
+    adrs: [ADR-0005]
+    domains: [agentic-delivery-governance]
+  - id: source-issue-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/validate-source-issue.mjs
+    enforcement: deterministic
+    adrs: [ADR-0007]
+    domains: [agentic-delivery-governance]
+  - id: toolchain-policy-validator
+    kind: validator
+    version: 0.1.0
+    path: validators/repository-delivery/lib/toolchain.mjs
+    enforcement: deterministic
+    adrs: [ADR-0008]
+    domains: [agentic-delivery-governance]

@@ -1,3 +1,5 @@
+<!-- agentic-primitive: {"id":"plain-language-communication","kind":"skill","enforcement":"instructional","adrs":["ADR-0002"],"domains":["agentic-delivery-governance"]} -->
+
 ---
 name: plain-language-communication
 description: Draft or review human-agent communication and repository documentation in clear Dutch or plain English.

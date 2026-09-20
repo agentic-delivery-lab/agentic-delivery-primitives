@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agentic-delivery-lab/agentic-delivery-primitives/blob/main/schemas/primitive-release.schema.json",
+  "title": "Agentic Primitive release v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "releaseId", "version", "status", "architecture", "sourceCommit", "contentSha256", "capabilityPolicyVersion"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "releaseId": { "type": "string", "pattern": "^urn:agentic-delivery:primitive-release:" },
+    "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "status": { "enum": ["draft", "released", "withdrawn"] },
+    "architecture": { "type": "object", "required": ["id", "version", "sourceCommit"], "additionalProperties": false, "properties": { "id": { "type": "string" }, "version": { "type": "string" }, "sourceCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" } } },
+    "sourceCommit": { "type": "string", "minLength": 7, "pattern": "^[0-9a-f]+$" },
+    "contentSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "capabilityPolicyVersion": { "type": "string" }
+  }
+}

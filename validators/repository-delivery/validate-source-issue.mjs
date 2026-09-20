@@ -1,3 +1,5 @@
+// agentic-primitive: {"id":"source-issue-validator","kind":"validator","enforcement":"deterministic","adrs":["ADR-0007"],"domains":["agentic-delivery-governance"]}
+
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

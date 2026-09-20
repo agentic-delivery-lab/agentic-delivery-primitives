@@ -1,3 +1,5 @@
+// agentic-primitive: {"id":"commit-range-validator","kind":"validator","enforcement":"deterministic","adrs":["ADR-0004","ADR-0005"],"domains":["agentic-delivery-governance"]}
+
 import { execFile, spawn } from 'node:child_process';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';

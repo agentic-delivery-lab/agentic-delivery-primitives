@@ -1,3 +1,5 @@
+<!-- agentic-primitive: {"id":"codex-delivery","kind":"agent","enforcement":"instructional","adrs":["ADR-0009","ADR-0012","ADR-0015","ADR-0017"],"domains":["agentic-delivery-control-plane"]} -->
+
 # Source issue execution
 
 This agentic primitive applies inside the automated source issue workflow.

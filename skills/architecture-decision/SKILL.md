@@ -1,3 +1,5 @@
+<!-- agentic-primitive: {"id":"architecture-decision","kind":"skill","enforcement":"instructional","adrs":["ADR-0001"],"domains":["agentic-delivery-governance"]} -->
+
 ---
 name: architecture-decision
 description: Review and manage traceable ADR changes from a GitHub Issue while keeping main as the official source of truth.
