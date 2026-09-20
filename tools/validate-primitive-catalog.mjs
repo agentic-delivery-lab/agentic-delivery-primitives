@@ -45,6 +45,24 @@ export async function validatePrimitiveCatalog(repositoryRoot = root) {
       } catch (error) { errors.push(`${relativePath} metadata is not valid JSON: ${error.message}`); }
     }
   }
+  let release;
+  try {
+    release = JSON.parse(await readFile(path.join(repositoryRoot, 'manifests/primitive-release.json'), 'utf8'));
+  } catch (error) {
+    errors.push(`manifests/primitive-release.json cannot be read: ${error.message}`);
+  }
+  if (release) {
+    if (release.schemaVersion !== 1) errors.push('primitive release schemaVersion must be 1');
+    if (!/^urn:agentic-delivery:primitive-release:/.test(release.releaseId ?? '')) errors.push('primitive release releaseId is invalid');
+    if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(release.version ?? '')) errors.push('primitive release version must be SemVer');
+    if (!['draft', 'released', 'withdrawn'].includes(release.status)) errors.push('primitive release status is invalid');
+    if (release.architecture?.id !== 'urn:agentic-delivery:architecture:authority') errors.push('primitive release architecture id is invalid');
+    if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(release.architecture?.version ?? '')) errors.push('primitive release architecture version must be SemVer');
+    if (!/^[0-9a-f]{40}$/.test(release.architecture?.sourceCommit ?? '')) errors.push('primitive release architecture sourceCommit must be immutable');
+    if (!/^[0-9a-f]{7,}$/.test(release.sourceCommit ?? '')) errors.push('primitive release sourceCommit must be an immutable commit reference');
+    if (release.contentSha256 !== null && !/^[0-9a-f]{64}$/.test(release.contentSha256 ?? '')) errors.push('primitive release contentSha256 must be a SHA-256 digest or null while draft');
+    if (typeof release.capabilityPolicyVersion !== 'string' || !release.capabilityPolicyVersion) errors.push('primitive release capabilityPolicyVersion is required');
+  }
   if (errors.length > 0) throw new Error(`primitive catalog check failed:\n${errors.join('\n')}`);
   return { primitives: entries.length };
 }
