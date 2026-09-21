@@ -4,6 +4,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 import { validatePrimitiveCatalog } from '../tools/validate-primitive-catalog.mjs';
+import { primitiveContentDigest } from '../tools/primitive-content-digest.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 
@@ -42,4 +43,11 @@ test('draft release pins the extracted Architecture Authority', async () => {
   const release = JSON.parse(await readFile(path.resolve(import.meta.dirname, '../manifests/primitive-release.json'), 'utf8'));
   assert.equal(release.architecture.id, 'urn:agentic-delivery:architecture:authority');
   assert.equal(release.architecture.sourceCommit, '6ba3c1bfd7f2709d5070cb5c8155e2dea984f5b4');
+});
+
+test('Primitive content digest is deterministic for a pinned tree', async () => {
+  const first = await primitiveContentDigest(root, 'HEAD');
+  const second = await primitiveContentDigest(root, 'HEAD');
+  assert.match(first, /^[0-9a-f]{64}$/);
+  assert.equal(first, second);
 });
