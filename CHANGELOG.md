@@ -5,8 +5,8 @@
 ### Changed
 
 - The draft Primitive release advances to `0.1.0-draft.4` and explicitly
-  consumes Architecture draft `0.1.0-draft.3` at
-  `d4714c9489fb14824ef0967903d34a73c3e437fb`.
+  consumes Architecture draft `0.1.0-draft.4` at
+  `61b2285334b5cff4ae2dba7875b132ad2a4a8502`.
 
 - The draft Primitive release advances to `0.1.0-draft.3` and consumes
   Architecture draft `0.1.0-draft.2` at
