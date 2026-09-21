@@ -4,6 +4,10 @@
 
 ### Changed
 
+- The draft Primitive release advances to `0.1.0-draft.4` and explicitly
+  consumes Architecture draft `0.1.0-draft.3` at
+  `d4714c9489fb14824ef0967903d34a73c3e437fb`.
+
 - The draft Primitive release advances to `0.1.0-draft.3` and consumes
   Architecture draft `0.1.0-draft.2` at
   `9b06a4e2202e851cdc700921828aac49d4a90d9d`.
