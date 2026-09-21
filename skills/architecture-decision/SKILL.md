@@ -12,7 +12,7 @@ Use this workflow when a choice is costly to reverse, affects several parts of t
 ## Required input
 
 - A GitHub Issue URL or repository/issue number for the work, or enough context to prepare one through the guarded intake below.
-- The repository's [`docs/decisions/README.md`](../../../docs/decisions/README.md) and [`adr-template.md`](../../../docs/decisions/adr-template.md).
+- [`references/architecture-authority.md`](../../references/architecture-authority.md), followed by `decisions/README.md` and `decisions/adr-template.md` from the immutable Architecture Authority commit resolved through `manifests/primitive-release.json`.
 
 If the repository lacks the canonical ADR documents, report that prerequisite. Do not invent another convention.
 
@@ -42,7 +42,7 @@ Do not create an ADR for a local, easily reversible implementation detail, an or
 ## Branch-local runbook
 
 1. Use the supplied source issue. It also serves as the ADR tracking issue when it directly tracks the decision work. During triage or refining, create a linked GitHub sub-issue with the architecture-decision issue form when a separate ADR tracking issue is useful. If the source issue itself already uses that form, use it directly. During implementation, create or update the ADR tracking issue before adding the ADR change.
-2. For a new decision, create the next `docs/decisions/NNNN-title-with-dashes.md` file from the template in the feature branch. For a removal, record the affected ADR path and reason in the ADR tracking issue and delete the file in the feature branch.
+2. For a new Architecture decision, prepare the next `decisions/NNNN-title-with-dashes.md` record in Architecture Authority from its template. A Primitive repository must not create a competing global ADR; local Primitive release decisions remain under this repository's `docs/decisions/` and use the local `ADP-` identifier space. For a removal, record the affected ADR path and reason in the ADR tracking issue and delete the file in the owning repository's feature branch.
 3. Keep the ADR frontmatter without a status field. Retain the date, source-issue and relevant decision-maker fields.
 4. Work from a feature branch. The feature branch must be the pull-request head; never create a pull request from `main`, which is only the protected base.
 5. If the ADR addition or removal affects agentic primitives, README files or other Markdown, update those files in the same branch and pull request.

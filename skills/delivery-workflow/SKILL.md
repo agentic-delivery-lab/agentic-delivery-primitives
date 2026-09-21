@@ -11,9 +11,9 @@ Use this skill when a change affects the repository's branch workflow, commit hi
 
 ## Establish repository context
 
-Before making a domain-bearing change, read [`docs/domain/README.md`](../../../docs/domain/README.md) and [`docs/domain/ubiquitous-language.yml`](../../../docs/domain/ubiquitous-language.yml). Use the `agentic-delivery-governance` bounded context and its registered terms. A missing concept, conflicting meaning or changed definition is a domain-model change and must be updated in the same change set.
+Before making a domain-bearing change, read [`references/architecture-authority.md`](../../references/architecture-authority.md), resolve the immutable Architecture Authority commit from `manifests/primitive-release.json`, and read its `architecture/domain/README.md` and `architecture/domain/ubiquitous-language.yml`. Use the `agentic-delivery-governance` bounded context and its registered terms. A missing concept, conflicting meaning or changed definition is a domain-model change and must be updated in the same change set.
 
-For an architectural choice, read [`docs/decisions/README.md`](../../../docs/decisions/README.md) and use `$architecture-decision`. An architecture decision record is provisional on a feature branch and becomes an official decision only after its review pull request is merged into `main`.
+For an architectural choice, resolve and read `decisions/README.md` and the ADR template from that same Architecture commit, then use `$architecture-decision`. An architecture decision record is provisional on a feature branch and becomes an official decision only after its review pull request is merged into `main`.
 
 ## Work from the trunk
 
@@ -63,7 +63,7 @@ Keep the description short and explain why in the body when needed. Use a breaki
 
 ## Maintain the changelog
 
-Keep [`CHANGELOG.md`](../../../CHANGELOG.md) curated for people. Add user-relevant changes under `[Unreleased]` and use the Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security`. Do not generate a raw commit dump, invent a release date or create a tag or release as part of ordinary feature work. A release is a separate, explicitly authorized human action using a SemVer version and an ISO 8601 date.
+Keep this repository's [`CHANGELOG.md`](../../CHANGELOG.md) curated for people. Add user-relevant changes under `[Unreleased]` and use the Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security`. Do not generate a raw commit dump, invent a release date or create a tag or release as part of ordinary feature work. A release is a separate, explicitly authorized human action using a SemVer version and an ISO 8601 date.
 
 Review whether a change belongs in the changelog and whether its wording is useful to readers; the validator can check structure, not relevance or meaning.
 

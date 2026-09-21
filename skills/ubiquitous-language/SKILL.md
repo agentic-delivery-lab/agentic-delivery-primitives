@@ -11,8 +11,8 @@ Use this skill before changing repository artifacts that express domain concepts
 
 ## Establish the context
 
-1. Read [`docs/domain/README.md`](../../../docs/domain/README.md) for the repository boundary and change process.
-2. Read [`docs/domain/ubiquitous-language.yml`](../../../docs/domain/ubiquitous-language.yml) as the canonical register.
+1. Read [`references/architecture-authority.md`](../../references/architecture-authority.md) and resolve the immutable Architecture Authority commit from `manifests/primitive-release.json`.
+2. Read `architecture/domain/README.md` and `architecture/domain/ubiquitous-language.yml` from that exact Architecture commit as the canonical boundary and register.
 3. Identify every bounded context affected by the requested change. Do not transfer a term's meaning to another context without an explicit mapping.
 
 If no existing context applies, or one term needs incompatible meanings, handle that as a domain-model change rather than silently broadening a definition.
