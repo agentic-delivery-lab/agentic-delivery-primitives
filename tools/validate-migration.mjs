@@ -59,11 +59,14 @@ export async function validateMigrationManifest(root) {
   return { manifest, mappedCommits: lines.length };
 }
 
-const root = process.argv[2] ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-try {
-  const result = await validateMigrationManifest(root);
-  process.stdout.write(`Migration manifest check passed: ${result.mappedCommits} source commit mappings.\n`);
-} catch (error) {
-  process.stderr.write(`${error.message}\n`);
-  process.exitCode = 1;
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  const root = process.argv[2] ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  try {
+    const result = await validateMigrationManifest(root);
+    process.stdout.write(`Migration manifest check passed: ${result.mappedCommits} source commit mappings.\n`);
+  } catch (error) {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 1;
+  }
 }
