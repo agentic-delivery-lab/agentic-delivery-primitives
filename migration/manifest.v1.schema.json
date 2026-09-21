@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-delivery-lab.github.io/primitives/migration/manifest.v1.schema.json",
+  "title": "History-preserving extraction manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "source",
+    "target",
+    "history",
+    "sourceCommitMap",
+    "issueAndPullRequestUrls",
+    "publication"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schemaVersion": { "const": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "commit"],
+      "properties": {
+        "repository": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "ref": { "type": "string", "minLength": 1 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "defaultBranch", "initialImportCommit"],
+      "properties": {
+        "repository": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+$" },
+        "defaultBranch": { "const": "main" },
+        "initialImportCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "filterTool", "filterSpecification"],
+      "properties": {
+        "strategy": { "const": "filtered-history-with-source-map" },
+        "filterTool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "tagCommit"],
+          "properties": {
+            "name": { "const": "git-filter-repo" },
+            "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+            "tagCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+          }
+        },
+        "filterSpecification": { "type": "string", "pattern": "^agentic-delivery-lab/agentic-delivery:.+#.+$" }
+      }
+    },
+    "sourceCommitMap": { "const": "source-commit-map.csv" },
+    "issueAndPullRequestUrls": { "const": "preserved" },
+    "publication": { "const": "local-prepared" }
+  }
+}

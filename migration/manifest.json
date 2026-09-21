@@ -1,0 +1,26 @@
+{
+  "$schema": "./manifest.v1.schema.json",
+  "schemaVersion": 1,
+  "source": {
+    "repository": "agentic-delivery-lab/agentic-delivery",
+    "ref": "refs/heads/docs/issue-52-persist-repository-split-plan",
+    "commit": "67d328b46d84ae599ebfe65ef550d156f689e112"
+  },
+  "target": {
+    "repository": "agentic-delivery-primitives",
+    "defaultBranch": "main",
+    "initialImportCommit": "e83b17112cd5b5f6f790bcd679d185d9ec367368"
+  },
+  "history": {
+    "strategy": "filtered-history-with-source-map",
+    "filterTool": {
+      "name": "git-filter-repo",
+      "version": "2.47.0",
+      "tagCommit": "cbad6503f5de690c9d5a376d900136691c330793"
+    },
+    "filterSpecification": "agentic-delivery-lab/agentic-delivery:migration/repository-boundaries.yml#agentic-primitives"
+  },
+  "sourceCommitMap": "source-commit-map.csv",
+  "issueAndPullRequestUrls": "preserved",
+  "publication": "local-prepared"
+}

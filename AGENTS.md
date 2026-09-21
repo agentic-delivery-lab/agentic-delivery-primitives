@@ -20,6 +20,6 @@ authoritative lifecycle implementation here.
 ## Required metadata and checks
 
 Every primitive has an `agentic-primitive` metadata block and an entry in the
-machine-readable catalog. Run `pnpm primitive:check` and `pnpm test` before a
-release. Releases include source commit, content digest, governing ADRs,
-capability policy version, and compatibility targets.
+machine-readable catalog. Run `pnpm primitive:check`, `pnpm migration:check`,
+and `pnpm test` before a release. Releases include source commit, content
+digest, governing ADRs, capability policy version, and compatibility targets.

@@ -22,5 +22,7 @@ jobs:
           node-version-file: .node-version
       - name: Validate primitive catalog
         run: pnpm primitive:check
+      - name: Validate history-preserving extraction manifest
+        run: pnpm migration:check
       - name: Run primitive tests
         run: pnpm test

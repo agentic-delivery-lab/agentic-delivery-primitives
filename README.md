@@ -17,3 +17,9 @@ decision explicitly scopes an organization-only agent to that private surface.
 
 This local repository is a history-preserving extraction prepared for review;
 remote repository creation and organization publication remain operator steps.
+
+```text
+pnpm primitive:check
+pnpm migration:check
+pnpm test
+```
