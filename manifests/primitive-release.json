@@ -6,8 +6,8 @@
   "status": "draft",
   "architecture": {
     "id": "urn:agentic-delivery:architecture:authority",
-    "version": "0.1.0-draft.4",
-    "sourceCommit": "61b2285334b5cff4ae2dba7875b132ad2a4a8502"
+    "version": "0.1.0-draft.3",
+    "sourceCommit": "d4714c9489fb14824ef0967903d34a73c3e437fb"
   },
   "sourceCommit": "a39267da377328dbfb1ed210a23b2628c224bed6",
   "contentSha256": "36a7e7e95a89ee00288f08a30ac41e4166e11516165e93af47b342026ce894d0",
