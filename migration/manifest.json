@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "source": {
     "repository": "agentic-delivery-lab/agentic-delivery",
-    "ref": "refs/heads/docs/issue-52-persist-repository-split-plan",
-    "commit": "67d328b46d84ae599ebfe65ef550d156f689e112"
+    "ref": "refs/heads/main",
+    "commit": "8b9bd77e1cb6008ce9dab3bbe8652ab7979b4c99"
   },
   "target": {
     "repository": "agentic-delivery-primitives",
