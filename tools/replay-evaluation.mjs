@@ -127,31 +127,40 @@ async function runFixture(validatorName, validatorModule, input) {
     try {
       validatorModule.validateBranchName(input);
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      if (error instanceof validatorModule.BranchNameValidationError) return false;
+      throw new Error(`Branch-name validator failed unexpectedly: ${error.message}`, { cause: error });
     }
   }
   if (validatorName !== 'source-issue') throw new Error(`Unsupported evaluation validator: ${validatorName}`);
 
+  let adapterFault;
+  let networkAttempted = false;
   try {
     await validatorModule.validateSourceIssue(input.issueNumber, {
       env: { GITHUB_REPOSITORY: input.repository },
       execFileImpl: async (command, args) => {
         if (command !== 'gh' || args[0] !== 'issue' || args[1] !== 'view') {
-          throw new Error('Synthetic adapter received an unexpected command.');
+          adapterFault = new Error('Synthetic adapter received an unexpected command.');
+          throw adapterFault;
         }
         if (args[2] !== input.issueNumber || args[4] !== input.repository) {
-          throw new Error('Synthetic adapter received a source outside the fixture.');
+          adapterFault = new Error('Synthetic adapter received a source outside the fixture.');
+          throw adapterFault;
         }
         return { stdout: `${input.state}\t${input.url}\n` };
       },
       fetchImpl: async () => {
+        networkAttempted = true;
         throw new Error('Network access is disabled during offline evaluation.');
       },
     });
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    if (networkAttempted) throw new Error('Source-issue validator attempted network access during offline evaluation.', { cause: error });
+    if (adapterFault) throw new Error('Source-issue validator exceeded the synthetic adapter boundary.', { cause: adapterFault });
+    if (error instanceof validatorModule.SourceIssueValidationError) return false;
+    throw new Error(`Source-issue validator failed unexpectedly: ${error.message}`, { cause: error });
   }
 }
 
@@ -191,10 +200,10 @@ export async function replayEvaluation({
     throw new Error('Working evaluation catalog differs from the Primitive release source commit.');
   }
   const catalog = JSON.parse(catalogBytes.toString('utf8'));
-  const localAjv = ajv2020();
+  const catalogAjv = ajv2020();
   const catalogSchemaBytes = await pinnedBlob(root, candidateCommit, contracts['evaluation-catalog-schema']);
   const catalogSchema = JSON.parse(catalogSchemaBytes.toString('utf8'));
-  const validateCatalog = localAjv.compile(catalogSchema);
+  const validateCatalog = catalogAjv.compile(catalogSchema);
   check(validateCatalog(catalog), validateCatalog, 'Evaluation catalog');
   const catalogSchemaPath = path.posix.normalize(path.posix.join('evaluations', catalog.$schema ?? ''));
   if (catalogSchemaPath !== contracts['evaluation-catalog-schema']) {
@@ -222,6 +231,7 @@ export async function replayEvaluation({
   }
 
   const localSchemas = new Map();
+  const localAjv = ajv2020();
   for (const [schemaArtifactId, schemaPath] of Object.entries(contracts)) {
     const { bytes } = catalogArtifacts.get(schemaArtifactId);
     const schema = JSON.parse(bytes.toString('utf8'));

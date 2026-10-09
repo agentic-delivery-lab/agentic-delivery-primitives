@@ -94,7 +94,7 @@
       "version": "0.1.0",
       "kind": "runner",
       "path": "tools/replay-evaluation.mjs",
-      "sha256": "5708ad40cb1e30d1fcd60f47c6c9b74e29c22c78a60b1d845d0650c13722c2ed"
+      "sha256": "73ca578a2974796a6f870dcbb6b534e19e088e3cad55059b97b67a3dd9939b49"
     },
     {
       "id": "content-digest-runner",
