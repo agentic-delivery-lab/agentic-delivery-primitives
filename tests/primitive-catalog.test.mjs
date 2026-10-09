@@ -45,8 +45,8 @@ test('draft release pins the extracted Architecture Authority', async () => {
   assert.equal(release.architecture.id, 'urn:agentic-delivery:architecture:authority');
   assert.equal(release.architecture.version, '0.1.0-draft.20');
   assert.equal(release.architecture.sourceCommit, 'd6af08cf503b9dc06f6b0f706c843b23cfe61a3e');
-  assert.equal(release.sourceCommit, 'f877bcee925f72aa673c2595a22aa20218dbf5db');
-  assert.equal(release.contentSha256, 'af3a56682564955914f30e344093285f6a691a85da33a38bd0331416b31ad4ef');
+  assert.equal(release.sourceCommit, 'a78c3d33141f107d0e6ee950e88313e53422a8db');
+  assert.equal(release.contentSha256, '47bb81bddac9803b6e8af474bc92f0ec4fbcbd29a229b5ee4303c3f3f5fbfc15');
 });
 
 test('Primitive content digest is deterministic for a pinned tree', async () => {
