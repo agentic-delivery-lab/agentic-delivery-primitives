@@ -11,6 +11,8 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      ARCHITECTURE_REPORT_SCHEMA: architecture-contract/architecture/contracts/evaluation-report.schema.json
     steps:
       - name: Check out primitives
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -41,7 +43,5 @@ jobs:
         run: pnpm migration:check
       - name: Replay pinned offline evaluations
         run: pnpm evaluation:check
-        env:
-          ARCHITECTURE_REPORT_SCHEMA: architecture-contract/architecture/contracts/evaluation-report.schema.json
       - name: Run primitive tests
         run: pnpm test

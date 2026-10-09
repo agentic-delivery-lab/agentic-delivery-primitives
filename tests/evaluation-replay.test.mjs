@@ -7,7 +7,8 @@ import { replayEvaluation } from '../tools/replay-evaluation.mjs';
 const root = path.resolve(import.meta.dirname, '..');
 const architectureSchemaPath = path.resolve(
   root,
-  '../agentic-delivery-architecture/architecture/contracts/evaluation-report.schema.json',
+  process.env.ARCHITECTURE_REPORT_SCHEMA
+    ?? '../agentic-delivery-architecture/architecture/contracts/evaluation-report.schema.json',
 );
 const generatedAt = '2026-10-09T00:00:00.000Z';
 
