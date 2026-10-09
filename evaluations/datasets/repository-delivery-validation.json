@@ -1,0 +1,43 @@
+{
+  "$schema": "../contracts/evaluation-dataset.schema.json",
+  "schemaVersion": 1,
+  "id": "repository-delivery-validation-offline",
+  "version": "0.1.0",
+  "classification": "synthetic",
+  "cases": [
+    {
+      "id": "valid-lowercase-branch",
+      "validator": "branch-name",
+      "input": "feat/issue-3-offline-evaluations",
+      "expectedOutcome": "pass"
+    },
+    {
+      "id": "reject-uppercase-branch",
+      "validator": "branch-name",
+      "input": "feat/Issue-3-Offline-Evaluations",
+      "expectedOutcome": "fail"
+    },
+    {
+      "id": "accept-open-source-issue",
+      "validator": "source-issue",
+      "input": {
+        "issueNumber": "7",
+        "repository": "example/repository",
+        "state": "OPEN",
+        "url": "https://github.com/example/repository/issues/7"
+      },
+      "expectedOutcome": "pass"
+    },
+    {
+      "id": "reject-closed-source-issue",
+      "validator": "source-issue",
+      "input": {
+        "issueNumber": "8",
+        "repository": "example/repository",
+        "state": "CLOSED",
+        "url": "https://github.com/example/repository/issues/8"
+      },
+      "expectedOutcome": "fail"
+    }
+  ]
+}

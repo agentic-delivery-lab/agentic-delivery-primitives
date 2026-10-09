@@ -1,0 +1,20 @@
+{
+  "$schema": "../contracts/evaluation-semantic-grader.schema.json",
+  "schemaVersion": 1,
+  "id": "manual-semantic-review-rubric",
+  "version": "0.1.0",
+  "method": "manual-only",
+  "automatedInvocationAllowed": false,
+  "criteria": [
+    {
+      "id": "context-fit",
+      "question": "Does the evaluation scope preserve the owning repository's bounded context?",
+      "evidenceRequired": "An independent reviewer records the relevant ownership and boundary evidence."
+    },
+    {
+      "id": "evidence-sufficiency",
+      "question": "Is the evidence sufficient for the stated synthetic fixture claims?",
+      "evidenceRequired": "The reviewer cites the pinned dataset, candidate and baseline source pins, and replay output."
+    }
+  ]
+}

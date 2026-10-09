@@ -17,6 +17,14 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Check out the pinned Architecture report contract
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: agentic-delivery-lab/agentic-delivery-architecture
+          ref: d6af08cf503b9dc06f6b0f706c843b23cfe61a3e
+          path: architecture-contract
+          fetch-depth: 1
+          persist-credentials: false
       - name: Set up pnpm
         uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         with:
@@ -25,9 +33,15 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
       - name: Validate primitive catalog
         run: pnpm primitive:check
       - name: Validate history-preserving extraction manifest
         run: pnpm migration:check
+      - name: Replay pinned offline evaluations
+        run: pnpm evaluation:check
+        env:
+          ARCHITECTURE_REPORT_SCHEMA: architecture-contract/architecture/contracts/evaluation-report.schema.json
       - name: Run primitive tests
         run: pnpm test
