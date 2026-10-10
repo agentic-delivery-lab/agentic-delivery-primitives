@@ -1,15 +1,15 @@
 {
   "$schema": "../schemas/primitive-release.schema.json",
   "schemaVersion": 1,
-  "releaseId": "urn:agentic-delivery:primitive-release:0.1.0-draft.4",
-  "version": "0.1.0-draft.4",
+  "releaseId": "urn:agentic-delivery:primitive-release:0.1.0-draft.6",
+  "version": "0.1.0-draft.6",
   "status": "draft",
   "architecture": {
     "id": "urn:agentic-delivery:architecture:authority",
-    "version": "0.1.0-draft.3",
-    "sourceCommit": "d4714c9489fb14824ef0967903d34a73c3e437fb"
+    "version": "0.1.0-draft.24",
+    "sourceCommit": "7b1d21462f70c411e75ae67ce80dcf688c9973e8"
   },
-  "sourceCommit": "a39267da377328dbfb1ed210a23b2628c224bed6",
-  "contentSha256": "36a7e7e95a89ee00288f08a30ac41e4166e11516165e93af47b342026ce894d0",
+  "sourceCommit": "7516aaab6b4bb43e37f2bd67f99563c530d0dbc2",
+  "contentSha256": "47f0df56901dc4fda6641e0837a4d1eb9935c3be15b7502ff9131d9ea9ccadaa",
   "capabilityPolicyVersion": "0.1.0"
 }
