@@ -1,10 +1,23 @@
 {
   "$schema": "../contracts/evaluation-semantic-grader.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "manual-semantic-review-rubric",
   "version": "0.1.0",
   "method": "manual-only",
   "automatedInvocationAllowed": false,
+  "evaluator": {
+    "id": "manual-semantic-review",
+    "kind": "human",
+    "version": "0.1.0"
+  },
+  "independence": {
+    "relation": "unknown",
+    "basis": "No human has applied this rubric to the candidate and baseline artifacts."
+  },
+  "calibration": {
+    "status": "not-applicable",
+    "rationale": "This manual-only rubric has no automated grader calibration result."
+  },
   "criteria": [
     {
       "id": "context-fit",

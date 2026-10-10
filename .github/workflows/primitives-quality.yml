@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           repository: agentic-delivery-lab/agentic-delivery-architecture
-          ref: d6af08cf503b9dc06f6b0f706c843b23cfe61a3e
+          ref: 7b1d21462f70c411e75ae67ce80dcf688c9973e8
           path: architecture-contract
           fetch-depth: 1
           persist-credentials: false

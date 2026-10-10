@@ -4,7 +4,14 @@
 
 ### Changed
 
-- The draft Primitive release advances to `0.1.0-draft.5` and pins
+- The draft Primitive release advances to `0.1.0-draft.6` and consumes
+  Architecture draft `0.1.0-draft.24` at
+  `7b1d21462f70c411e75ae67ce80dcf688c9973e8`, pinning the evaluation report
+  contract 2.0.0 by its exact schema digest.
+- Evaluation reports now carry a registered case-selection policy, explicit
+  case stimuli and outcomes, and evaluator identity, independence, and
+  calibration evidence required by report contract 2.0.0.
+- The prior draft Primitive release advanced to `0.1.0-draft.5` and pinned
   Architecture draft `0.1.0-draft.20` at
   `d6af08cf503b9dc06f6b0f706c843b23cfe61a3e`.
 - Expanded the deterministic content digest to cover evaluation contracts,

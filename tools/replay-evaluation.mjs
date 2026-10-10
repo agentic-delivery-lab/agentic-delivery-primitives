@@ -25,6 +25,7 @@ const contracts = {
   'baseline-schema': 'evaluations/contracts/evaluation-baseline.schema.json',
   'comparator-schema': 'evaluations/contracts/evaluation-comparator.schema.json',
   'evaluation-catalog-schema': 'evaluations/contracts/evaluation-catalog.schema.json',
+  'selection-policy-schema': 'evaluations/contracts/evaluation-selection-policy.schema.json',
 };
 
 function sha256(contents) {
@@ -91,13 +92,22 @@ function artifact(catalog, id) {
   return found;
 }
 
-function pinnedDefinition(catalog, id, repository, commit) {
+function pinnedDefinition(catalog, id, repository, commit, definition) {
   const item = artifact(catalog, id);
   return {
     id,
     version: item.version,
     sourcePin: sourcePin(repository, commit, item.path, item.sha256),
+    evaluator: definition.evaluator,
+    independence: definition.independence,
+    calibration: definition.calibration,
   };
+}
+
+function hasSameOrderedItems(actual, expected) {
+  return actual.length === expected.length
+    && new Set(actual).size === actual.length
+    && expected.every((item, index) => actual[index] === item);
 }
 
 async function loadCheckedArtifact({ root, commit, catalog, id }) {
@@ -180,8 +190,10 @@ export async function replayEvaluation({
   architectureSchemaPath = process.env.ARCHITECTURE_REPORT_SCHEMA
     ? path.resolve(root, process.env.ARCHITECTURE_REPORT_SCHEMA)
     : path.resolve(root, '../agentic-delivery-architecture/architecture/contracts/evaluation-report.schema.json'),
-  generatedAt = new Date().toISOString(),
+  generatedAt,
+  runStartedAt,
 } = {}) {
+  const actualRunStartedAt = runStartedAt ?? generatedAt ?? new Date().toISOString();
   const scratchPath = await mkdtemp(path.join(tmpdir(), 'primitives-offline-evaluation-'));
   try {
   const release = JSON.parse(await readFile(path.join(root, 'manifests/primitive-release.json'), 'utf8'));
@@ -213,10 +225,6 @@ export async function replayEvaluation({
   if (catalog.repository !== PRIMITIVES_REPOSITORY) throw new Error('Evaluation catalog repository does not match this Primitive repository.');
   if (catalog.reportSchema.repository !== ARCHITECTURE_REPOSITORY) throw new Error('Report schema pin is not owned by Architecture Authority.');
   if (catalog.reportSchema.commit !== release.architecture.sourceCommit) throw new Error('Report schema commit must match the Primitive release Architecture pin.');
-  if (catalog.reportSchema.commit !== 'd6af08cf503b9dc06f6b0f706c843b23cfe61a3e') {
-    throw new Error('This draft evaluator expects the exact immutable Architecture report contract source pin.');
-  }
-  if (release.architecture.version !== '0.1.0-draft.20') throw new Error('Primitive release must identify the pinned Architecture draft version 0.1.0-draft.20.');
 
   const catalogArtifacts = new Map();
   for (const entry of catalog.artifacts) {
@@ -240,6 +248,7 @@ export async function replayEvaluation({
 
   const instances = [
     ['evaluation-dataset', 'evaluation-dataset-schema'],
+    ['dataset-selection-policy', 'selection-policy-schema'],
     ['deterministic-grader', 'deterministic-grader-schema'],
     ['semantic-rubric', 'semantic-grader-schema'],
     ['synthetic-baseline', 'baseline-schema'],
@@ -257,6 +266,7 @@ export async function replayEvaluation({
   }
 
   const dataset = values.get('evaluation-dataset');
+  const selectionPolicy = values.get('dataset-selection-policy');
   const grader = values.get('deterministic-grader');
   const semanticRubric = values.get('semantic-rubric');
   const baseline = values.get('synthetic-baseline');
@@ -269,6 +279,26 @@ export async function replayEvaluation({
   }
   if (baseline.sourcePins.some((pin) => pin.commit !== baseline.sourceCommit || pin.repository !== PRIMITIVES_REPOSITORY)) {
     throw new Error('Every baseline validator pin must use the baseline source commit and Primitives repository.');
+  }
+  const datasetCaseIds = dataset.cases.map(({ id }) => id);
+  if (selectionPolicy.datasetId !== dataset.id) throw new Error('Selection policy must name the exact pinned evaluation dataset.');
+  if (selectionPolicy.partition !== 'synthetic' || dataset.classification !== 'synthetic') {
+    throw new Error('This offline replay only accepts a selection policy and dataset classified as synthetic.');
+  }
+  if (selectionPolicy.sampling !== 'census') throw new Error('This offline replay requires a pre-registered census selection policy.');
+  if (Date.parse(selectionPolicy.registeredAt) > Date.parse(actualRunStartedAt)) {
+    throw new Error('Selection policy must be registered before the evaluation run starts.');
+  }
+  if (!hasSameOrderedItems(selectionPolicy.eligibleCaseIds, datasetCaseIds)) {
+    throw new Error('Selection policy eligible case IDs and order must exactly match the pinned dataset.');
+  }
+  if (!hasSameOrderedItems(selectionPolicy.includedCaseIds, selectionPolicy.eligibleCaseIds)) {
+    throw new Error('Census selection must include every eligible case without result-based filtering.');
+  }
+  if (selectionPolicy.exclusions.some(({ caseId }) => (
+    !selectionPolicy.eligibleCaseIds.includes(caseId) || selectionPolicy.includedCaseIds.includes(caseId)
+  ))) {
+    throw new Error('An excluded case cannot also be included in the evaluation selection.');
   }
 
   const { item: candidateBranch, validatorModule: candidateBranchModule } = await loadPinnedValidator({
@@ -309,6 +339,7 @@ export async function replayEvaluation({
       checkId: `candidate.${fixture.validator}.${fixture.id}`,
       outcome: candidateMatched ? 'pass' : 'fail',
       details: `Expected ${fixture.expectedOutcome}; validator ${candidateActual ? 'accepted' : 'rejected'} the synthetic input.`,
+      ...(candidateMatched ? {} : { failureClass: 'correctness-regression' }),
       evidenceRefs: [`${datasetUrl}#${fixture.id}`],
     });
 
@@ -324,6 +355,10 @@ export async function replayEvaluation({
   const baselinePassed = baselineChecks.filter(Boolean).length;
   const candidateRate = passed / dataset.cases.length;
   const baselineRate = baselinePassed / dataset.cases.length;
+  const reportGeneratedAt = generatedAt ?? new Date().toISOString();
+  if (Date.parse(actualRunStartedAt) > Date.parse(reportGeneratedAt)) {
+    throw new Error('Evaluation run start cannot be later than its generated report time.');
+  }
   const claim = candidateRate === baselineRate
     ? 'no-change'
     : ((candidateRate > baselineRate) === (comparator.direction === 'higher-is-better') ? 'improvement' : 'regression');
@@ -336,16 +371,34 @@ export async function replayEvaluation({
   const baselineArtifact = artifact(catalog, 'synthetic-baseline');
   const comparatorArtifact = artifact(catalog, 'deterministic-pass-rate-comparator');
   const catalogDigest = sha256(catalogBytes);
-  const baselineMeasurement = measurement(comparator.metricId, baselineRate, comparator.unit, generatedAt, datasetUrl);
-  const candidateMeasurement = measurement(comparator.metricId, candidateRate, comparator.unit, generatedAt, datasetUrl);
+  const baselineMeasurement = measurement(comparator.metricId, baselineRate, comparator.unit, reportGeneratedAt, datasetUrl);
+  const candidateMeasurement = measurement(comparator.metricId, candidateRate, comparator.unit, reportGeneratedAt, datasetUrl);
   const reportSchemaUrl = `https://github.com/${catalog.reportSchema.repository}/blob/${catalog.reportSchema.commit}/${catalog.reportSchema.path}`;
   const subjectArtifact = artifact(catalog, 'candidate-capabilities-catalog');
+  const selectionPolicyUrl = githubBlob(PRIMITIVES_REPOSITORY, candidateCommit, artifact(catalog, 'dataset-selection-policy').path);
+  const reportCases = dataset.cases.map((fixture, index) => {
+    const checkResult = candidateChecks[index];
+    return {
+      caseId: fixture.id,
+      task: fixture.task,
+      stimulus: fixture.stimulus,
+      expectedOutcome: {
+        description: fixture.expectedOutcomeDescription,
+        acceptanceCriteria: fixture.acceptanceCriteria,
+      },
+      observedOutcome: checkResult.details,
+      outcome: checkResult.outcome,
+      ...(checkResult.failureClass ? { failureClass: checkResult.failureClass } : {}),
+      evidenceRefs: checkResult.evidenceRefs,
+    };
+  });
 
   const report = {
     $schema: reportSchemaUrl,
     contractVersion: reportSchemaVersion,
     reportId: `offline:${dataset.id}:${candidateCommit}:${baseline.sourceCommit}`,
-    generatedAt,
+    runStartedAt: actualRunStartedAt,
+    generatedAt: reportGeneratedAt,
     classification: 'synthetic',
     evaluationMode: 'offline',
     layer: 'agent-capability',
@@ -359,8 +412,24 @@ export async function replayEvaluation({
       id: dataset.id,
       version: dataset.version,
       sourcePin: pinFor('evaluation-dataset'),
-      caseIds: dataset.cases.map(({ id }) => id),
+      partition: selectionPolicy.partition,
+      selection: {
+        policyPin: pinFor('dataset-selection-policy'),
+        registeredAt: selectionPolicy.registeredAt,
+        sampling: selectionPolicy.sampling,
+        eligiblePopulation: selectionPolicy.eligiblePopulation,
+        inclusionCriteria: selectionPolicy.inclusionCriteria,
+        exclusions: selectionPolicy.exclusions,
+      },
+      integrity: {
+        contaminationStatus: 'unknown',
+        assessedAt: reportGeneratedAt,
+        provenanceBasis: 'The dataset is source-controlled synthetic test data; no independent benchmark-contamination assessment has been performed.',
+        evidenceRefs: [datasetUrl, selectionPolicyUrl],
+      },
+      caseIds: selectionPolicy.includedCaseIds,
     },
+    cases: reportCases,
     dependencies: [
       {
         id: 'evaluation-catalog',
@@ -385,8 +454,8 @@ export async function replayEvaluation({
       ...baseline.sourcePins.map((pin) => ({ id: pin.id, version: pin.version, sourcePin: baselinePinFor(pin) })),
     ],
     graders: {
-      deterministic: pinnedDefinition(catalog, 'replay-runner', PRIMITIVES_REPOSITORY, candidateCommit),
-      semantic: pinnedDefinition(catalog, 'semantic-rubric', PRIMITIVES_REPOSITORY, candidateCommit),
+      deterministic: pinnedDefinition(catalog, 'replay-runner', PRIMITIVES_REPOSITORY, candidateCommit, grader),
+      semantic: pinnedDefinition(catalog, 'semantic-rubric', PRIMITIVES_REPOSITORY, candidateCommit, semanticRubric),
     },
     results: {
       deterministicChecks: candidateChecks,
@@ -407,6 +476,10 @@ export async function replayEvaluation({
         direction: comparator.direction,
       },
       candidateMeasurement,
+    },
+    improvementHypothesis: {
+      status: 'not-proposed',
+      rationale: 'The candidate and pinned baseline produce the same result on a small synthetic fixture set; no improvement hypothesis or production claim is supported.',
     },
     uncertainty: {
       level: 'high',
@@ -442,7 +515,7 @@ export async function replayEvaluation({
     limitations: [
       'This is a synthetic offline evaluation; no live production or product outcome is claimed.',
       'The semantic rubric is pinned but manual-only; semanticJudgments remains empty until a reviewer records independent evidence.',
-      'Architecture Issue #11 review and merge, plus Primitive Issue #2 ADR impact mapping, remain prerequisites to adoption.',
+      'Adoption remains gated on Primitive Issue #2 ADR impact mapping, independent semantic review, and approved release pins.',
       'The report records evidence and an existing owner Issue; it cannot authorize work, create an Issue, change policy, activate a participant, approve or merge a pull request, or change Project configuration.',
     ],
   };
